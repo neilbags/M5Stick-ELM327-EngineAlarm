@@ -2,7 +2,7 @@
 #include "BluetoothSerial.h"
 #include "ELMduino.h"
 
-int alarmTemp = 97;
+int alarmTemp = 99;
 
 int cycle = 0;
 int temp = 0;
@@ -36,7 +36,7 @@ void loop() {
   M5.update(); // Read the press state of the key
   float tempFloat = myELM327.engineCoolantTemp();
   // We got a reading
-  if (myELM327.status == ELM_SUCCESS)
+  if (myELM327.nb_rx_state == ELM_SUCCESS)
   {
     temp = (int)tempFloat;
     Serial.print("Temp: ");
@@ -66,6 +66,11 @@ void loop() {
       M5.Beep.mute();
     }     
   }
+  // No response available, try again
+  else if (myELM327.nb_rx_state == ELM_GETTING_MSG) {
+    return;
+  }
+  // Something went wrong
   else 
   {
     Serial.println("Couldn't get coolant temp");
